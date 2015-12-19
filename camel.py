@@ -170,6 +170,7 @@ def init():
     print("<{Insert Story Here}>")
     print()
     printStats()
+    healthCheck(True)
     printMenu()
     gameRunner()
 
@@ -304,21 +305,27 @@ def doAction(action, amount, doReturn = True):
     else:
         return False
 
-def healthCheck():
+def healthCheck(isInit):
     for i in inv["stats"]:
         if inv["stats"][i] <= 0:
             print()
             if i == "health":
                 print("You died due to the lack of health.")
                 print()
-                print("Start the game and reset to try again.")
-                exitGame()
-                print False
+                if isInit:
+                    doReset()
+                else:
+                    print("Start the game and reset to try again.")
+                    exitGame()
+                return False
             elif i == "thirst":
                 print("You died due to the lack of proper hydration")
                 print()
-                print("Start the game and reset to try again.")
-                exitGame()
+                if isInit:
+                    doReset()
+                else:
+                    print("Start the game and reset to try again.")
+                    exitGame()
                 return False
             elif i == "bandwidth":
                 print("You ran out of bandwidth. Call you ISP to get more.")
@@ -364,7 +371,7 @@ def travel():
 
     dayTick(_local["event"])
     printStats()
-    healthCheck()
+    healthCheck(False)
     printMenu()
 
 def gameRunner():
