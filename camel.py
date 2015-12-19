@@ -5,7 +5,8 @@
 # This is a text based game inspired by Fallout written in Python
 #
 # @copyright   2015            Alexander Young, Noah Hayes
-# @license     MIT Licence     <https://opensource.org/licenses/MIT>
+# @license     MIT Licence     <https://github.com/meun5/camel-game-python/blob/master/LICENSE>
+# @link        Github          <https://github.com/meun5/camel-game-python/>
 # @version     alpha-dev       0.1.1
 #
 # Credits:
