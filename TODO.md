@@ -16,5 +16,5 @@ Items that are strikethrough are completed items.
 Items
 =====
 
-* *Level 1:*
-    1. Finish the game
+* Level 1:
+    1. *Finish the game*
