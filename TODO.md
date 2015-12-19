@@ -8,8 +8,10 @@ Definition
     These items are design items. These include visual things like lore, spelling, and text output.
 
 Items in italics are items currently being worked on.
-Items in bold are important items
-Items that are strikethrough are completed items
+
+Items in bold are important items.
+
+Items that are strikethrough are completed items.
 
 Items
 =====
