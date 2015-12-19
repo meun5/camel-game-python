@@ -18,3 +18,5 @@ Items
 
 * Level 1:
     1. *Finish the game*
+* Level 3:
+    1. Implement a story or lore
