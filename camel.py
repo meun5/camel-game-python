@@ -79,6 +79,7 @@ senarios = {
     "general": {
         "haters": "The haters are {amount} kilometres behind you.",
         "travel": "You traveled {amount} kilometres",
+        "call_isp": "You are out of Bandwidth. Call Bell Canada at 1 866 310-BELL."
     },
     "travel": {
         0: {
@@ -121,17 +122,20 @@ senarios = {
             "gained": "You gain {amount} litres of Nuka Cola",
             "special": "cola|inc",
             "type": "cola",
+            "event": "none",
         },
         6: {
             "message": "While you where traveling you where MITM'ed by a hatin' sysadmin. While you battled with him, the haters gained ground.",
             "gained": "You traveled {amount} kilometres",
             "special": "haters_back|inc",
             "type": "kilometres",
+            "event": "battle",
         },
     },
 }
 
 isGame = True
+need_bandwidth = False
 
 def init():
     print()
@@ -196,6 +200,8 @@ def printMenu():
     print("D: Drink")
     print("R: Eat")
     print("S: Scavange")
+    if need_bandwidth:
+        print("C: Call ISP")
     print("#: Sleep/Save")
     print("~: Reset")
     print("E: Exit")
@@ -257,11 +263,18 @@ def switch(thing):
         exitGame()
     elif thing == "~":
         doReset()
+    if need_bandwidth:
+        if thing == "C":
+            call_isp()
 
 def exitGame():
     isGame = False
     save(True)
     exit()
+
+def call_isp():
+    printBlank(2)
+    print("Calling Bell Canada at ")
 
 def invControl(what, amount, mode = "add"):
     if mode == "subtract":
@@ -291,12 +304,33 @@ def doAction(action, amount, doReturn = True):
     else:
         return False
 
+def healthCheck():
+    for i in inv["stats"]:
+        if inv["stats"][i] <= 0:
+            print()
+            if i == "health":
+                print("You died due to the lack of health.")
+                print()
+                print("Start the game and reset to try again.")
+                exitGame()
+                print False
+            elif i == "thirst":
+                print("You died due to the lack of proper hydration")
+                print()
+                print("Start the game and reset to try again.")
+                exitGame()
+                return False
+            elif i == "bandwidth":
+                print("You ran out of bandwidth. Call you ISP to get more.")
+                return 5
+    return True
+
 def dayTick(event = False):
     for i in inv["stats"]:
         amount = random.randint(limits["deduct_min"][i], limits["deduct_max"][i])
         if isinstance(event, str):
             if event == "battle":
-                amount *= 2
+                amount *= 3
         inv["stats"][i] -= amount
         print("You used", amount, "of", i.capitalize())
 
@@ -328,8 +362,9 @@ def travel():
     inv["day"] += 1
     inv["haters_back"] = kilo_hater
 
-    dayTick()
+    dayTick(_local["event"])
     printStats()
+    healthCheck()
     printMenu()
 
 def gameRunner():
