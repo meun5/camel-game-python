@@ -429,7 +429,7 @@ def travel():
 def eat():
     amount = random.randint(int(limits["generate"]["health"].split("|")[0]), int(limits["generate"]["health"].split("|")[1]))
     inv["stats"]["health"] += amount
-    inv["radroach"] -= 1
+    inv["radroach"] -= limits["eat"]
     print(senarios["general"]["eat"].format(amount = amount))
     print()
 
