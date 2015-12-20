@@ -62,7 +62,7 @@ inv = {
 }
 
 limits = {
-    "eat": 1,
+    "eat": 3,
     "drink": 300,
     "deduct_min": {
         "health": 2,
@@ -74,13 +74,18 @@ limits = {
         "thirst": 9,
         "bandwidth": 8,
     },
+    "generate": {
+        "health": "4|37",
+        "drink": "7|29",
+    }
 }
 
 senarios = {
     "general": {
         "haters": "The haters are {amount} kilometres behind you.",
         "travel": "You traveled {amount} kilometres",
-        "call_isp": "You are out of Bandwidth. Call Bell Canada at 1-866-310-2355."
+        "call_isp": "You are out of Bandwidth. Call Bell Canada at 1-866-310-2355.",
+        "eat": "You ate one radroach meat and gained {amount} health. Thats about it.",
     },
     "travel": {
         0: {
@@ -201,7 +206,6 @@ def printMenu():
     print("T: Travel")
     print("D: Drink")
     print("R: Eat")
-    print("S: Scavange")
     if inv["need_bandwidth"]:
         print("C: Call ISP")
     print("#: Sleep/Save")
@@ -265,6 +269,8 @@ def switch(thing):
         exitGame()
     elif thing == "~":
         doReset()
+    elif thing == "R":
+        eat()
     if inv["need_bandwidth"]:
         if thing == "C":
             call_isp()
@@ -318,9 +324,6 @@ def call_isp():
                         inv["need_bandwidth"] = False
                     time.sleep(3)
                     printBlank(5)
-                    printStats()
-                    healthCheck(False)
-                    printMenu()
         else:
             print("Sorry, I don't understand that option.")
 
@@ -420,14 +423,21 @@ def travel():
         inv["haters_back"] = kilo_hater
 
         dayTick(_local["event"])
-        printStats()
-        healthCheck(False)
-        printMenu()
+
+def eat():
+    amount = random.randint(int(limits["generate"]["health"].split("|")[0]), int(limits["generate"]["health"].split("|")[1]))
+    inv["stats"]["health"] += amount
+    inv["radroach"] -= 1
+    print(senarios["general"]["eat"].format(amount = amount))
+    print()
 
 def gameRunner():
     while (isGame):
         what = str(raw_input("What would you like to do?: ")).capitalize()
         switch(what)
+        printStats()
+        healthCheck(False)
+        printMenu()
 
 init()
 exit()
