@@ -50,7 +50,7 @@ maxGain = 45
 inv = {
     "cola": 3,
     "radroach": 3,
-    "kilometres": 1212795138968,
+    "kilometres": 9980000,
     "haters_back": 150,
     "day": 1,
     "stats": {
@@ -195,11 +195,6 @@ def printInv():
     print("You have", "{:,}".format(inv["kilometres"]), "kilometres to go")
     print("The Haters are", "{:,}".format(inv["haters_back"]), "kilometres behind you")
 
-def printEoD(obj):
-    if isinstance(obj, object):
-        for i in obj:
-            print(obj[i])
-
 def printMenu():
     printInv()
     printBlank(2)
@@ -259,21 +254,28 @@ def doReset():
         isGame = False
         print("Exiting...")
         exit()
+    else:
+        print("Unknown option:", y_n)
+        exitGame()
 
 def switch(thing):
     if thing == "T":
         travel()
     elif thing == "#":
         save(True)
+        return False
     elif thing == "E":
         exitGame()
+        return False
     elif thing == "~":
         doReset()
+        return False
     elif thing == "R":
         eat()
     if inv["need_bandwidth"]:
         if thing == "C":
             call_isp()
+    return True
 
 def exitGame():
     isGame = False
@@ -300,7 +302,7 @@ def call_isp():
             print()
             print("Ok, let me just check a few details", end="")
             for i in range(3):
-                time.sleep(0.1)
+                time.sleep(3)
                 print(".", end="")
             print()
             print("Thank you for your patience. How much bandwidth would you like to order?")
@@ -311,12 +313,12 @@ def call_isp():
                 amount = int(raw_input("Enter a numerical amount: "))
                 if amount > 450:
                     print("Sorry, we can not currently offer that amount")
-                elif amount < 450:
+                elif amount <= 450:
                     amountLarge = False
                     print("Ok, I'll add that to your account right away", end="")
                     inv["stats"]["bandwidth"] += amount
                     for i in range(3):
-                        time.sleep(0.1)
+                        time.sleep(3)
                         print(".", end="")
                     print()
                     print("Thank you for calling Bell Canada. Your Bandwidth has been added to your account.")
@@ -434,10 +436,10 @@ def eat():
 def gameRunner():
     while (isGame):
         what = str(raw_input("What would you like to do?: ")).capitalize()
-        switch(what)
-        printStats()
-        healthCheck(False)
-        printMenu()
+        if switch(what):
+            printStats()
+            healthCheck(False)
+            printMenu()
 
 init()
 exit()
