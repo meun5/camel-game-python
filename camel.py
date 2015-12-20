@@ -58,6 +58,7 @@ inv = {
         "thirst": 75,
         "bandwidth": 250,
     },
+    "need_bandwidth": False,
 }
 
 limits = {
@@ -66,12 +67,12 @@ limits = {
     "deduct_min": {
         "health": 2,
         "thirst": 2,
-        "bandwidth": 3,
+        "bandwidth": 4,
     },
     "deduct_max": {
         "health": 7,
         "thirst": 9,
-        "bandwidth": 6,
+        "bandwidth": 8,
     },
 }
 
@@ -79,7 +80,7 @@ senarios = {
     "general": {
         "haters": "The haters are {amount} kilometres behind you.",
         "travel": "You traveled {amount} kilometres",
-        "call_isp": "You are out of Bandwidth. Call Bell Canada at 1 866 310-BELL."
+        "call_isp": "You are out of Bandwidth. Call Bell Canada at 1-866-310-2355."
     },
     "travel": {
         0: {
@@ -135,7 +136,6 @@ senarios = {
 }
 
 isGame = True
-need_bandwidth = False
 
 def init():
     print()
@@ -182,6 +182,7 @@ def printTitle():
     print(" /_/       \__,_/  /_/   /_/   \____/ \____/  \__/  ")
 
 def printInv():
+    print()
     print("Today's date:", curr_date)
     print()
     print("You have", "{:,}".format(inv["cola"]), "litres of Nuka Cola")
@@ -201,7 +202,7 @@ def printMenu():
     print("D: Drink")
     print("R: Eat")
     print("S: Scavange")
-    if need_bandwidth:
+    if inv["need_bandwidth"]:
         print("C: Call ISP")
     print("#: Sleep/Save")
     print("~: Reset")
@@ -264,7 +265,7 @@ def switch(thing):
         exitGame()
     elif thing == "~":
         doReset()
-    if need_bandwidth:
+    if inv["need_bandwidth"]:
         if thing == "C":
             call_isp()
 
@@ -275,7 +276,53 @@ def exitGame():
 
 def call_isp():
     printBlank(2)
-    print("Calling Bell Canada at ")
+    print("Calling Bell Canada at 1-866-310-2355")
+    for i in range(550):
+        time.sleep(0.04)
+        print(".", end="")
+    printBlank(2)
+    print("Hello, My name is Mark from Bell Canada.")
+    print("How may I help you today?")
+    print()
+    print("O: Order Bandwidth")
+    print()
+    optionInvalid = True
+    while (optionInvalid):
+        option = str(raw_input("Select an Option: ")).capitalize()
+        if option == "O":
+            optionInvalid = False
+            print()
+            print("Ok, let me just check a few details", end="")
+            for i in range(3):
+                time.sleep(0.1)
+                print(".", end="")
+            print()
+            print("Thank you for your patience. How much bandwidth would you like to order?")
+            print()
+            amountLarge = True
+
+            while (amountLarge):
+                amount = int(raw_input("Enter a numerical amount: "))
+                if amount > 450:
+                    print("Sorry, we can not currently offer that amount")
+                elif amount < 450:
+                    amountLarge = False
+                    print("Ok, I'll add that to your account right away", end="")
+                    inv["stats"]["bandwidth"] += amount
+                    for i in range(3):
+                        time.sleep(0.1)
+                        print(".", end="")
+                    print()
+                    print("Thank you for calling Bell Canada. Your Bandwidth has been added to your account.")
+                    if inv["stats"]["bandwidth"] >= 0:
+                        inv["need_bandwidth"] = False
+                    time.sleep(3)
+                    printBlank(5)
+                    printStats()
+                    healthCheck(False)
+                    printMenu()
+        else:
+            print("Sorry, I don't understand that option.")
 
 def invControl(what, amount, mode = "add"):
     if mode == "subtract":
@@ -317,7 +364,6 @@ def healthCheck(isInit):
                 else:
                     print("Start the game and reset to try again.")
                     exitGame()
-                return False
             elif i == "thirst":
                 print("You died due to the lack of proper hydration")
                 print()
@@ -326,11 +372,10 @@ def healthCheck(isInit):
                 else:
                     print("Start the game and reset to try again.")
                     exitGame()
-                return False
             elif i == "bandwidth":
                 print("You ran out of bandwidth. Call you ISP to get more.")
-                return 5
-    return True
+                print()
+                inv["need_bandwidth"] = True
 
 def dayTick(event = False):
     for i in inv["stats"]:
@@ -344,35 +389,40 @@ def dayTick(event = False):
 def travel():
     global curr_date
 
-    kilo = random.randint(maxTravel["user"]["min"], maxTravel["user"]["max"])
-    amount = random.randint(maxTravel["user"]["min"], maxTravel["user"]["max"])
-    kilo_hater = random.randint(maxTravel["haters"]["min"], maxTravel["haters"]["max"])
-    _local = senarios["travel"][random.randrange(1, len(senarios["travel"]))]
+    if inv["need_bandwidth"]:
+        print("You don't have any bandwidth. You need to call Bell Canada to get more.")
+        if str(raw_input("Do you want to call them now? (Y/N): ")) == "Y":
+            call_isp()
+    else:
+        kilo = random.randint(maxTravel["user"]["min"], maxTravel["user"]["max"])
+        amount = random.randint(maxTravel["user"]["min"], maxTravel["user"]["max"])
+        kilo_hater = random.randint(maxTravel["haters"]["min"], maxTravel["haters"]["max"])
+        _local = senarios["travel"][random.randrange(1, len(senarios["travel"]))]
 
-    printBlank(7)
-    print(_local["message"])
+        printBlank(7)
+        print(_local["message"])
 
-    amount = doAction(_local["special"].split("|"), amount)
+        amount = doAction(_local["special"].split("|"), amount)
 
-    if (_local["special"].split("|")[0] == "kilometres" and _local["special"].split("|")[1] == "none"):
-        kilo = 0
+        if (_local["special"].split("|")[0] == "kilometres" and _local["special"].split("|")[1] == "none"):
+            kilo = 0
 
-    if _local["type"] is not "kilometres":
-        print(senarios["general"]["travel"].format(amount = kilo))
-        inv["kilometres"] -= kilo
+        if _local["type"] is not "kilometres":
+            print(senarios["general"]["travel"].format(amount = kilo))
+            inv["kilometres"] -= kilo
 
-    print(_local["gained"].format(amount = amount))
-    print(senarios["general"]["haters"].format(amount = kilo_hater))
-    printBlank(3)
+        print(_local["gained"].format(amount = amount))
+        print(senarios["general"]["haters"].format(amount = kilo_hater))
+        printBlank(3)
 
-    curr_date += timedelta(days=1)
-    inv["day"] += 1
-    inv["haters_back"] = kilo_hater
+        curr_date += timedelta(days=1)
+        inv["day"] += 1
+        inv["haters_back"] = kilo_hater
 
-    dayTick(_local["event"])
-    printStats()
-    healthCheck(False)
-    printMenu()
+        dayTick(_local["event"])
+        printStats()
+        healthCheck(False)
+        printMenu()
 
 def gameRunner():
     while (isGame):
