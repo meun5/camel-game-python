@@ -20,5 +20,6 @@ Items
     1. *Finish the game*
 * Level 2:
     1. Rename the variable to something more logical or descriptive
+    2. Document Code
 * Level 3:
     1. Implement a story or lore
