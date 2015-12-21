@@ -50,7 +50,7 @@ maxGain = 45
 inv = {
     "cola": 3,
     "radroach": 3,
-    "kilometres": 9980000,
+    "kilometres": 46495,
     "haters_back": 150,
     "day": 1,
     "stats": {
@@ -85,7 +85,7 @@ senarios = {
         "haters": "The haters are {amount} kilometres behind you.",
         "travel": "You traveled {amount} kilometres",
         "call_isp": "You are out of Bandwidth. Call Bell Canada at 1-866-310-2355.",
-        "eat": "You ate one radroach meat and gained {amount} health. Thats about it.",
+        "eat": "You ate {limit} radroach meat and gained {amount} health. Thats about it.",
     },
     "travel": {
         0: {
@@ -430,7 +430,7 @@ def eat():
     amount = random.randint(int(limits["generate"]["health"].split("|")[0]), int(limits["generate"]["health"].split("|")[1]))
     inv["stats"]["health"] += amount
     inv["radroach"] -= limits["eat"]
-    print(senarios["general"]["eat"].format(amount = amount))
+    print(senarios["general"]["eat"].format(amount = amount, limit = limits["eat"]))
     print()
 
 def gameRunner():
