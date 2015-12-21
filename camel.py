@@ -117,8 +117,8 @@ senarios = {
             "event": "none",
         },
         4: {
-            "message": "Whilst traveling you where attacked by a deathclaw. Your travel distance was cut in half.",
-            "gained": "You traveled {amount} kilometres",
+            "message": "Whilst traveling you where attacked by a deathclaw. In your confusion you traveled in the wrong direction.",
+            "gained": "You traveled {amount} kilometres back",
             "special": "kilometres|half",
             "type": "kilometres",
             "event": "battle",
@@ -212,7 +212,7 @@ def printStats():
     print()
     print("Your Stats:")
     for i in inv["stats"]:
-        print(i.capitalize() + ":", inv["stats"][i],  "GBps" if i == "bandwidth" else "")
+        print(i.capitalize() + ":", inv["stats"][i],  "GB" if i == "bandwidth" else "")
 
 def printBlank(num):
     if isinstance(num, int):
