@@ -86,6 +86,7 @@ senarios = {
         "travel": "You traveled {amount} kilometres",
         "call_isp": "You are out of Bandwidth. Call Bell Canada at 1-866-310-2355.",
         "eat": "You ate {limit} radroach meat and gained {amount} health. Thats about it.",
+        "drink": "You drank {limit} litres of Nuka Cola and quenched {amount} thirst. Nothing else happened.",
     },
     "travel": {
         0: {
@@ -272,6 +273,8 @@ def switch(thing):
         return False
     elif thing == "R":
         eat()
+    elif thing == "D":
+        drink()
     if inv["need_bandwidth"]:
         if thing == "C":
             call_isp()
@@ -431,6 +434,13 @@ def eat():
     inv["stats"]["health"] += amount
     inv["radroach"] -= limits["eat"]
     print(senarios["general"]["eat"].format(amount = amount, limit = limits["eat"]))
+    print()
+
+def drink():
+    amount = random.randint(int(limits["generate"]["drink"].split("|")[0]), int(limits["generate"]["drink"].split("|")[1]))
+    inv["stats"]["thirst"] += amount
+    inv["cola"] -= limits["drink"]
+    print(senarios["general"]["drink"].format(amount = amount, limit = limits["drink"]))
     print()
 
 def gameRunner():
