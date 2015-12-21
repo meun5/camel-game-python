@@ -272,9 +272,11 @@ def switch(thing):
         doReset()
         return False
     elif thing == "R":
-        eat()
+        if not eat():
+            return False
     elif thing == "D":
-        drink()
+        if not drink():
+            return False
     if inv["need_bandwidth"]:
         if thing == "C":
             call_isp()
@@ -430,17 +432,29 @@ def travel():
         dayTick(_local["event"])
 
 def eat():
+    print()
     amount = random.randint(int(limits["generate"]["health"].split("|")[0]), int(limits["generate"]["health"].split("|")[1]))
     inv["stats"]["health"] += amount
-    inv["radroach"] -= limits["eat"]
-    print(senarios["general"]["eat"].format(amount = amount, limit = limits["eat"]))
+    if inv["radroach"] >= limits["drink"]:
+        inv["radroach"] -= limits["eat"]
+        print(senarios["general"]["eat"].format(amount = amount, limit = limits["eat"]))
+    else:
+        print("You don't have enough radroach to eat")
+        print()
+        return False
     print()
 
 def drink():
+    print()
     amount = random.randint(int(limits["generate"]["drink"].split("|")[0]), int(limits["generate"]["drink"].split("|")[1]))
     inv["stats"]["thirst"] += amount
-    inv["cola"] -= limits["drink"]
-    print(senarios["general"]["drink"].format(amount = amount, limit = limits["drink"]))
+    if inv["cola"] >= limits["drink"]:
+        inv["cola"] -= limits["drink"]
+        print(senarios["general"]["drink"].format(amount = amount, limit = limits["drink"]))
+    else:
+        print("You don't have enough cola to drink")
+        print()
+        return False
     print()
 
 def gameRunner():
